@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Layout from "@/components/Layout";
+import Modal from "@/components/Modal";
+import Registermodal from "@/components/modals/RegisterModal";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -15,9 +17,13 @@ export default function RootLayout({
   return (
     <html >
       <body>
+        <>
+        
+        <Registermodal/>
         <Layout>
           {children}
         </Layout>
+        </>
         
       </body>
     </html>

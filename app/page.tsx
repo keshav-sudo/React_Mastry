@@ -5,7 +5,7 @@ const page = () => {
   return (
   
   <>
-  <Header lable = "Home" />
+  <Header lable = "Home" showBackArrow />
   </>
   )
 }
