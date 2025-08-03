@@ -1,0 +1,66 @@
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String    @id @default(auto()) @map("_id") @db.ObjectId // Correct for MongoDB
+  name             String?
+  username         String?    @unique
+  email            String ?   @unique
+  emailVerified    DateTime?
+  image            String?
+  coverImage       String?
+  profileImage     String?
+  hashedPassword   String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  bio              String?
+  followingIds     String[]  @db.ObjectId
+  hasNotification  Boolean?  
+
+  posts         Post[]
+  comments      Comment[]
+  notifications Notification[]
+}
+
+model Post {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId // Correct for MongoDB
+  body      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  userId    String    @db.ObjectId
+  likedIds  String[]  @db.ObjectId 
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  comments Comment[]
+}
+
+model Comment {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId // Correct for MongoDB
+  body      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  userId String @db.ObjectId // Correct for MongoDB
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  postId String @db.ObjectId // Correct for MongoDB
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId // Correct for MongoDB
+  body      String
+  createdAt DateTime  @default(now())
+
+  userId String @db.ObjectId // Correct for MongoDB
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
