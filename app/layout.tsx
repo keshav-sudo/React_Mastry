@@ -3,6 +3,7 @@ import "./globals.css";
 import Layout from "@/components/Layout";
 import Modal from "@/components/Modal";
 import Registermodal from "@/components/modals/RegisterModal";
+import LoginModal from "@/components/modals/LoginModal";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -20,6 +21,7 @@ export default function RootLayout({
         <>
         
         <Registermodal/>
+        <LoginModal/>
         <Layout>
           {children}
         </Layout>

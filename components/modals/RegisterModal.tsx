@@ -23,7 +23,7 @@ const Registermodal = () => {
         }
         registermodal.onClose();
         loginmodal.onOpen();
-    },[])
+    },[isloading , registermodal, loginmodal])
     const onSubmit = useCallback(async () => {
         try{
             setisloding(true);

@@ -5,18 +5,14 @@ import { AiOutlineClose } from "react-icons/ai";
 import Button from "./Buttton";
 
 interface ModalProps {
-    isOpen?: boolean; // Modal dikhana hai ya nahi (true/false)
-    onClose: () => void; // Jab modal close ho toh kya function call kare
-    onSubmit: () => void; // Jab modal ka main action submit ho toh kya function call kare
-    title?: string; // Modal ka title text
-    body?: React.ReactElement; // Modal ke andar ka main content (JSX format mein)
-    footer?: React.ReactElement; // Modal ke neeche ka extra content (JSX format mein)
-    actionLabel: string; // Modal ke primary action button ka text (e.g., "Submit", "Tweet")
-    disabled?: boolean; // Agar koi action pending ho toh modal ke buttons ko disable karega
-
-    // IMPORTANT: 'outline', 'secondary', 'large' props are NOT part of ModalProps.
-    // They belong to the 'Button' component that is used inside the Modal's footer.
-    // The Modal component should NOT concern itself with these styling props.
+    isOpen?: boolean;
+    onClose: () => void;
+    onSubmit: () => void;
+    title?: string;
+    body?: React.ReactElement;
+    footer?: React.ReactElement;
+    actionLabel: string;
+    disabled?: boolean;
 }
 
 const Modal: React.FC<ModalProps> = ({
@@ -29,15 +25,19 @@ const Modal: React.FC<ModalProps> = ({
     actionLabel,
     disabled,
 }) => {
-    const [showModal, setShowModal] = useState(isOpen);
+    // This is the crucial fix: the early return for `isOpen` must be
+    // before any hooks are called (like useState or useCallback).
+    if (!isOpen) {
+        return null;
+    }
+
+    // FIX: We explicitly tell TypeScript that showModal is of type `boolean`.
+    // This prevents the state from being inferred as a literal `true` type.
+    const [showModal, setShowModal] = useState<boolean>(isOpen);
 
     useEffect(() => {
         setShowModal(isOpen);
     }, [isOpen]);
-
-    if (!isOpen) {
-        return null;
-    }
 
     const handleClose = useCallback(() => {
         if (disabled) {
@@ -119,9 +119,9 @@ const Modal: React.FC<ModalProps> = ({
                             className="
                                 flex
                                 items-center
-                                justify-between /* Adjusted based on visual */
                                 p-6
                                 rounded-t
+                                justify-center
                                 relative
                                 border-b-[1px]
                                 border-neutral-700
@@ -134,13 +134,13 @@ const Modal: React.FC<ModalProps> = ({
                                     border-0
                                     hover:opacity-70
                                     transition
-                                    ml-auto /* Adjusted */
+                                    absolute
+                                    left-9
                                 "
                             >
                                 <AiOutlineClose size={20} color="white" />
                             </button>
-                            {/* Title Div - adjusted placement based on visual, not perfectly centered */}
-                            <div className="text-xl font-semibold text-white ml-auto">
+                            <div className="text-xl font-semibold text-white">
                                 {title}
                             </div>
                         </div>
@@ -153,16 +153,13 @@ const Modal: React.FC<ModalProps> = ({
                         {/* FOOTER */}
                         <div className="flex flex-col gap-2 p-6">
                             <div className="flex flex-row items-center gap-4 w-full">
-                                {/* THIS IS WHERE THE IMPORTED BUTTON COMPONENT IS USED */}
                                 <Button
                                     disabled={disabled}
-                                    label={actionLabel} // The 'actionLabel' prop for Modal becomes 'label' for Button
-                                    onClick={handleSubmit} // Modal's 'onSubmit' becomes Button's 'onClick'
-                                    // You would pass Button-specific styling props here if needed, e.g.:
+                                    label={actionLabel}
+                                    onClick={handleSubmit}
                                     secondary
                                     fullWidth
                                     large
-                                    // outline
                                 />
                             </div>
                             {footer}
