@@ -4,6 +4,10 @@ import Layout from "@/components/Layout";
 import Modal from "@/components/Modal";
 import Registermodal from "@/components/modals/RegisterModal";
 import LoginModal from "@/components/modals/LoginModal";
+import { Toaster } from "react-hot-toast";
+
+// Import the client component wrapper for SessionProvider
+import NextAuthProvider from "@/components/providers/NextAuthProvider";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -16,18 +20,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html >
+    <html lang="en">
       <body>
-        <>
-        
-        <Registermodal/>
-        <LoginModal/>
-        <Layout>
-          {children}
-        </Layout>
-        </>
-        
+      
+        <NextAuthProvider>
+          <Toaster />
+          <Registermodal/>
+          <LoginModal/>
+          <Toaster />
+          <Layout>
+            {children}
+          </Layout>
+        </NextAuthProvider>
       </body>
     </html>
   );
 }
+

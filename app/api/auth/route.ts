@@ -1,14 +1,10 @@
-import NextAuth from "next-auth";
+import NextAuth, { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
+import prisma from "@/libs/prismadb";
 
-const prisma = new PrismaClient(); // Make sure this is a singleton or imported correctly
-
-export default NextAuth({
-  adapter: PrismaAdapter(prisma),
-
+// We apply the 'AuthOptions' type to ensure TypeScript is happy.
+export const authOptions: AuthOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -44,12 +40,19 @@ export default NextAuth({
       },
     }),
   ],
+
+  pages: {
+    signIn: '/login',
+    error: '/auth/error'
+  },
   
   debug: process.env.NODE_ENV === "development",
 
   session: {
-    strategy: "jwt",
+    strategy: "jwt", // This is of type SessionStrategy, which is part of AuthOptions
   },
   
   secret: process.env.NEXTAUTH_SECRET,
-});
+};
+
+export const { handlers, auth, signIn, signOut } = NextAuth(authOptions);

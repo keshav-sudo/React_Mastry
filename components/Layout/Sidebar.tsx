@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { BsBellFill, BsHouseFill } from "react-icons/bs";
 import { FaUser } from "react-icons/fa6";
@@ -5,8 +7,13 @@ import Sidebarlogo from "./Sidebarlogo";
 import Sidebaritems from "./Sidebaritems";
 import { BiLogOut } from "react-icons/bi";
 import SidebarTwitteButton from "./SidebarTwitteButton";
+import useCurrentUser from "../hooks/useCurrentUser";
+// Correct import: The signOut function is from the client-side next-auth library
+import { signOut } from "next-auth/react";
 
 const Sidebar = () => {
+  const { data: currentUser } = useCurrentUser();
+
   const items = [
     {
       label: "Home",
@@ -20,7 +27,7 @@ const Sidebar = () => {
     },
     {
       label: "Profile",
-      href: "/users/123",
+      href: currentUser ? `/users/${currentUser.id}` : '#',
       icon: FaUser,
     },
   ];
@@ -28,7 +35,7 @@ const Sidebar = () => {
     <div className=" col-span-1 h-full pr-4 md:pr-6" >
       <div className=" flex flex-col items-end">
         <div className="space-y-2 lg:w-[230px]">
-            <Sidebarlogo/>  
+            <Sidebarlogo/>
             { items.map((item) => (
                 <Sidebaritems
                 key={item.href}
@@ -38,7 +45,8 @@ const Sidebar = () => {
                 />
             ))
             }
-            <Sidebaritems onClick={()=> {}} icon={BiLogOut} label="logout"/>
+            {currentUser && (<Sidebaritems onClick={() => signOut()} icon={BiLogOut} label="logout"/>)}
+
             <SidebarTwitteButton/>
         </div>
      </div>

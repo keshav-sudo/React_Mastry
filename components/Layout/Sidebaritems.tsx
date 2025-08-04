@@ -1,5 +1,7 @@
 "use client"; // ✅ Needed if you later use hooks like useRouter in this file
 
+import { useRouter } from "next/navigation";
+import { useCallback } from "react";
 import { IconType } from "react-icons";
 
 interface SidebarItemProps {
@@ -7,6 +9,7 @@ interface SidebarItemProps {
   href?: string;
   icon: IconType;
   onClick?: () => void;
+  auth?: boolean;
 }
 
 const Sidebaritems: React.FC<SidebarItemProps> = ({
@@ -15,10 +18,19 @@ const Sidebaritems: React.FC<SidebarItemProps> = ({
   icon: Icon,
   onClick,
 }) => {
+  const router = useRouter();
+  const handleback = useCallback(() => {
+    if(onClick){
+      return onClick();
+    }
+    if(href){
+      router.push(href); 
+    }
+  }, [router , onClick , href])
   return (
     <div
       className="flex flex-row items-center"
-      onClick={onClick}
+      onClick={handleback}
     >
       {/* Mobile icon view */}
       <div
